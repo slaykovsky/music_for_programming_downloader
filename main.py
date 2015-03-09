@@ -1,45 +1,35 @@
 __author__ = 'Alexey Slaykovsky'
 __email__ = 'alexey@slaykovsky.com'
-__music_for_programming__ = 'http://musicforprogramming.net'
+__music_for_programming__ = 'http://musicforprogramming.net/rss.php'
+
 
 import urllib.request
 import os
-from bs4 import BeautifulSoup
+import feedparser
 from sys import stdout
 
 
 def main():
-    print('Hi there!')
-    print('I\'ll download some cool music')
-    html = get_html(__music_for_programming__)
-    menu_links = get_menu_links(html)
-    # song_link = get_song_link(html)['href']
-    # download_song(song_link)
-    for menu_link in menu_links:
-        link = menu_link['href']
-        song_page = get_html(__music_for_programming__ + link)
-        song_link = get_song_link(song_page)['href']
-        download_song(menu_link.get_text(), song_link)
+    print('Hi!')
+    print('Let\'s download beautiful songs!')
+    items = get_items(__music_for_programming__)
+    links = get_song_links(items)
+    for link in links:
+        download_song(link['title'], link['url'])
 
 
-def get_html(url):
-    response = urllib.request.urlopen(url)
-    html = response.read()
-    return html
+def get_items(url):
+    feed = feedparser.parse(url)
+    items = feed['items']
+    return items
 
 
-def get_menu_links(html):
-    soup = BeautifulSoup(html)
-    menu = soup.find('div', {'class': 'menu'})
-    links = menu.findAll(href=True)
+def get_song_links(items):
+    links = []
+    for item in items:
+        link = {'title': item['title'], 'url': item['links'][1]['href']}
+        links.append(link)
     return links
-
-
-def get_song_link(html):
-    soup = BeautifulSoup(html)
-    content = soup.find('div', {'class': 'content'})
-    link = content.find(href=True)
-    return link
 
 
 def download_song(name, song_link):
