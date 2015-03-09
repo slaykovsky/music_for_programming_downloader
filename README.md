@@ -3,9 +3,9 @@
 That's program downloads music from [musicForProgramming()](http://musicforprogramming.net/).
 
 #TODO
-~~* Make sure I don't have a file~~
+* ~~Make sure I don't have a file~~
 * Let me choose where I want to save file
-* Make downloading status to be good
+* ~~Make downloading status to be good~~
 * Parallel download (MHAHAHAHA!!!111)
 * Download ***last*** song ***last***
 * Make some others TODO things ;)
