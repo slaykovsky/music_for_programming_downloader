@@ -3,7 +3,9 @@ __email__ = 'alexey@slaykovsky.com'
 __music_for_programming__ = 'http://musicforprogramming.net'
 
 import urllib.request
+import os
 from bs4 import BeautifulSoup
+from sys import stdout
 
 
 def main():
@@ -42,11 +44,17 @@ def get_song_link(html):
 
 def download_song(name, song_link):
     if ".mp3" in song_link:
-        file_name = name + '.mp3'
-        f = open(file_name, 'wb')
         u = urllib.request.urlopen(song_link)
         meta = u.info()
         file_size = int(meta["Content-Length"])
+        file_name = name + '.mp3'
+
+        if os.path.isfile(file_name) and \
+                os.stat(file_name).st_size == file_size:
+            print(file_name + ' is already downloaded! Skipping!')
+            return
+
+        f = open(file_name, 'wb')
         print('Downloading: ' + file_name
               + ' Bytes: ' + str(file_size))
 
@@ -62,7 +70,8 @@ def download_song(name, song_link):
             status = r"%10d [%3.2f%%]" % \
                 (file_size_dl, file_size_dl * 100. / file_size)
             status = status + chr(8)*(len(status)+1)
-            print(status)
+            stdout.write(status)
+            stdout.flush()
 
         f.close()
     else:
