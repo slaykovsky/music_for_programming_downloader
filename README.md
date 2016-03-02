@@ -10,8 +10,8 @@ That's program downloads music from [musicForProgramming()](http://musicforprogr
 * ~~Make sure I don't have a file skip it otherwise~~
 * ~~Let me choose where I want to save file~~
 * ~~Make downloading status to be good~~
-* ~~Fix stupid bugs~~
-* ~~Make PIP package~~
+* Fix stupid bugs
+* Make PIP package
 
 # How to use
 You need to install `feedparser`.
