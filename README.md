@@ -1,6 +1,6 @@
 # musicForProgramming() downloader
 
-*It's ~~working~~ **almost** working ;)*
+*It's ~~working~~ almost working ;)*
 
 That's program downloads music from [musicForProgramming()](http://musicforprogramming.net/).
 
