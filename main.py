@@ -1,27 +1,9 @@
-__author__ = 'Alexey Slaykovsky'
-__email__ = 'alexey@slaykovsky.com'
-__music_for_programming__ = 'http://musicforprogramming.net/rss.php'
-
-
 import urllib.request
 import os
 import feedparser
-from sys import stdout
+import sys
 
-
-def main():
-    print('Hi!')
-    print('Let\'s download beautiful songs!')
-    items = get_items(__music_for_programming__)
-    links = get_song_links(items)
-    for link in links:
-        download_song(link['title'], link['url'])
-
-
-def get_items(url):
-    feed = feedparser.parse(url)
-    items = feed['items']
-    return items
+RSS_LINK = 'http://musicforprogramming.net/rss.php'
 
 
 def get_song_links(items):
@@ -32,40 +14,77 @@ def get_song_links(items):
     return links
 
 
-def download_song(name, song_link):
-    if ".mp3" in song_link:
-        u = urllib.request.urlopen(song_link)
+def get_items(url):
+    feed = feedparser.parse(url)
+    items = feed['items']
+    return items
+
+
+def download_song(title, url, download_dir):
+    if ".mp3" in url:
+        u = urllib.request.urlopen(url)
         meta = u.info()
         file_size = int(meta["Content-Length"])
-        file_name = name + '.mp3'
+        file_name = title + '.mp3'
+        file_path = os.path.join(download_dir, file_name)
 
-        if os.path.isfile(file_name) and \
-                os.stat(file_name).st_size == file_size:
+        if os.path.isfile(file_path) and \
+                os.stat(file_path).st_size == file_size:
             print(file_name + ' is already downloaded! Skipping!')
             return
 
-        f = open(file_name, 'wb')
-        print('Downloading: ' + file_name
-              + ' Bytes: ' + str(file_size))
+        try:
+            f = open(file_path, 'wb')
+        except Exception as e:
+            print(str(e))
+            print('Do you want to create directory? (yes, no):',)
+            answer = input()
+            if answer == 'yes':
+                os.mkdir(download_dir)
+                f = open(file_path, 'wb')
+            elif answer == 'no':
+                return
+            else:
+                print('Please answer "yes" or "no".')
+
+        print('Downloading: ' + file_name + ' Bytes: ' + str(file_size))
 
         file_size_dl = 0
         block_sz = 8192
+
         while True:
-            buffer = u.read(block_sz)
-            if not buffer:
+            buff = u.read(block_sz)
+            if not buff:
                 break
 
-            file_size_dl += len(buffer)
-            f.write(buffer)
+            file_size_dl += len(buff)
+            f.write(buff)
             status = r"%10d [%3.2f%%]" % \
                 (file_size_dl, file_size_dl * 100. / file_size)
             status = status + chr(8)*(len(status)+1)
-            stdout.write(status)
-            stdout.flush()
-
+            sys.stdout.write(status)
+            sys.stdout.flush()
         f.close()
     else:
         print('LOLWUT?')
+
+
+def main():
+    try:
+        download_dir = sys.argv[1]
+    except:
+        download_dir = './downloads'
+    print('Hi!')
+    print('Let\'s download beautiful songs!')
+    print('Songs will be downloaded in %s directory.' % download_dir)
+    items = get_items(RSS_LINK)
+
+    links = get_song_links(items)
+
+    for link in links:
+        title = link['title']
+        url = link['url']
+        download_song(title, url, download_dir)
 
 
 if __name__ == '__main__':

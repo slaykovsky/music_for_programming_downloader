@@ -4,6 +4,7 @@ __pycache__/
 
 *.mp3
 .ropeproject/
+./downloads
 
 # C extensions
 *.so
